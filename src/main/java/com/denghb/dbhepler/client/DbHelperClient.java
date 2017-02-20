@@ -1,6 +1,7 @@
 package com.denghb.dbhepler.client;
 
 import com.denghb.dbhepler.generate.Generate;
+import com.denghb.dbhepler.generate.GenerateException;
 import com.denghb.dbhepler.utils.ConfigUtils;
 
 import javax.swing.*;
@@ -111,7 +112,7 @@ public class DbHelperClient extends JFrame {
                 if (null != file && file.isDirectory()) {
                     targetField.setText(file.getAbsolutePath());
                 } else {
-                    msgLabel.setText("Please Choose Directory..");
+                    showError("Please Choose Directory");
                 }
             }
         });
@@ -145,26 +146,53 @@ public class DbHelperClient extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // host
                 String host = hostField.getText();
+                if(isEmpty(host)){
+                    showError("Host is empty");
+                    return;
+                }
 
                 // username
                 String username = usernameField.getText();
+                if(isEmpty(username)){
+                    showError("Username is empty");
+                    return;
+                }
 
                 // password
                 String password = passwordField.getText();
 
                 // database
                 String database = databaseField.getText();
+                if(isEmpty(database)){
+                    showError("Database is empty");
+                    return;
+                }
 
                 // port
                 String port = portField.getText();
-
-                String packageName = packageField.getText();
+                if(isEmpty(port)){
+                    port = "3306";
+                }
 
                 String targetDir = targetField.getText();
+                if(isEmpty(targetDir)){
+                    showError("Please Choose Directory");
+                    return;
+                }
+                String packageName = packageField.getText();
+                if(isEmpty(packageName)){
+                    showError("Package is empty");
+                    return;
+                }
 
-                Generate.start(host, username, password, database, port, packageName, targetDir);
 
-                msgLabel.setText("Done!!");
+                try {
+                    Generate.start(host, username, password, database, port, packageName, targetDir);
+                    showSuccess("Done!!");
+                } catch (GenerateException e1) {
+                    showError(e1.getMessage());
+                }
+
 
                 // 保存配置
                 ConfigUtils.setValue("host",host);
@@ -208,6 +236,20 @@ public class DbHelperClient extends JFrame {
             }
         });
 
+    }
+
+    private void showSuccess(String msg){
+        msgLabel.setText(msg);
+        msgLabel.setForeground(Color.GREEN);
+    }
+
+    private void showError(String msg){
+        msgLabel.setText(msg);
+        msgLabel.setForeground(Color.RED);
+    }
+
+    private boolean isEmpty(String text){
+        return null == text || 0 == text.trim().length();
     }
 
     /**

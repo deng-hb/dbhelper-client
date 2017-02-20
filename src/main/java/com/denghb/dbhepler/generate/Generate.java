@@ -24,7 +24,7 @@ public class Generate {
 
     private static final String DB_URL = "jdbc:mysql://%s:%s/%s?useUnicode=true&amp;characterEncoding=utf-8";
 
-    private Generate(String host, String username, String password, String database, String port, String packageName, String targetDir) {
+    private Generate(String host, String username, String password, String database, String port, String packageName, String targetDir) throws GenerateException {
 
         String url = String.format(DB_URL, host, port, database);
 
@@ -44,12 +44,9 @@ public class Generate {
             }
 
 
-        } catch (SQLException se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
         } catch (Exception e) {
-            // 处理 Class.forName 错误
             e.printStackTrace();
+            throw new GenerateException("JDBC Error");
         } finally {
             // 关闭资源
             try {
@@ -61,7 +58,7 @@ public class Generate {
         System.out.println("Goodbye!");
     }
 
-    private void create(Connection conn, String database, String packageName, DatabaseTableInfo info, String targetDir) throws SQLException {
+    private void create(Connection conn, String database, String packageName, DatabaseTableInfo info, String targetDir) throws SQLException, GenerateException {
         // 类名
         String domainName = ColumnUtils.removeAll_AndNextCharToUpperCase(info.getTableName());
         domainName = ColumnUtils.firstCharToUpperCase(domainName);
@@ -113,16 +110,13 @@ public class Generate {
             Writer out = new BufferedWriter(new FileWriter(file));
             template.process(root, out);
             out.flush();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (TemplateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new GenerateException("Generate Error");
         }
     }
 
-    public static void start(String host, String username, String password, String database, String port, String packageName, String targetDir) {
+    public static void start(String host, String username, String password, String database, String port, String packageName, String targetDir) throws GenerateException {
         new Generate(host, username, password, database, port, packageName, targetDir);
     }
 }
