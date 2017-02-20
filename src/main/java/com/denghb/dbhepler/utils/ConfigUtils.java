@@ -11,7 +11,7 @@ public class ConfigUtils {
 
 
 
-    private static String PROP_FILE_NAME = "configw";
+    private static String PROP_FILE_NAME = ".config";
 
     /**
      * 获取属性

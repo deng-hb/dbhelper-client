@@ -1,5 +1,8 @@
 package com.denghb.dbhepler.client;
 
+import com.denghb.dbhepler.generate.Generate;
+import com.denghb.dbhepler.utils.ConfigUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -24,7 +27,7 @@ public class DbHelperClient extends JFrame {
     public DbHelperClient() {
         this.setTitle("Generate Entity from MySQL!!!");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 关闭按钮的动作为退出窗口
-        this.setSize(400, 280);// 大小
+        this.setSize(400, 320);// 大小
         this.setResizable(false);// 禁止缩放
         this.setLocationRelativeTo(null);// 屏幕居中显示，需要先设置frame大小
 
@@ -44,13 +47,13 @@ public class DbHelperClient extends JFrame {
         panel.add(label);
 
         // 主机名
-        JLabel hostLabel = new JLabel("Host:");
+        final JLabel hostLabel = new JLabel("Host:");
         hostLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         hostLabel.setBounds(_X, 30, _LABEL_WIDTH, _LABEL_HEIGHT);
         panel.add(hostLabel);
 
-        JTextField hostField = new JTextField();
+        final JTextField hostField = new JTextField();
         hostField.setBounds(getRight(hostLabel), 30, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(hostField);
 
@@ -60,7 +63,7 @@ public class DbHelperClient extends JFrame {
         usernameLabel.setBounds(_X, getBottom(hostLabel) + _V_GAP, _LABEL_WIDTH, _LABEL_HEIGHT);
         panel.add(usernameLabel);
 
-        JTextField usernameField = new JTextField();
+        final JTextField usernameField = new JTextField();
         usernameField.setBounds(getRight(usernameLabel), getBottom(hostField) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(usernameField);
 
@@ -70,7 +73,7 @@ public class DbHelperClient extends JFrame {
         passwordLabel.setBounds(_X, getBottom(usernameLabel) + _V_GAP, _LABEL_WIDTH, _LABEL_HEIGHT);
         panel.add(passwordLabel);
 
-        JPasswordField passwordField = new JPasswordField();
+        final JTextField passwordField = new JTextField();
         passwordField.setBounds(getRight(passwordLabel), getBottom(usernameField) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(passwordField);
 
@@ -80,7 +83,7 @@ public class DbHelperClient extends JFrame {
         databaseLabel.setBounds(_X, getBottom(passwordLabel) + _V_GAP, _LABEL_WIDTH, _LABEL_HEIGHT);
         panel.add(databaseLabel);
 
-        JTextField databaseField = new JTextField();
+        final JTextField databaseField = new JTextField();
         databaseField.setBounds(getRight(databaseLabel), getBottom(passwordField) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(databaseField);
 
@@ -90,7 +93,7 @@ public class DbHelperClient extends JFrame {
         portLabel.setBounds(_X, getBottom(databaseLabel) + _V_GAP, _LABEL_WIDTH, _LABEL_HEIGHT);
         panel.add(portLabel);
 
-        JTextField portField = new JTextField();
+        final JTextField portField = new JTextField();
         portField.setBounds(getRight(portLabel), getBottom(databaseField) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(portField);
 
@@ -119,28 +122,75 @@ public class DbHelperClient extends JFrame {
         targetField.setBounds(getRight(chooseButton), getBottom(portLabel) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(targetField);
 
+        // 包名
+        JLabel packageLabel = new JLabel("Package:");
+        packageLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        packageLabel.setBounds(_X, getBottom(chooseButton) + _V_GAP, _LABEL_WIDTH, _LABEL_HEIGHT);
+        panel.add(packageLabel);
+
+        final JTextField packageField = new JTextField();
+        packageField.setBounds(getRight(packageLabel), getBottom(targetField) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
+        panel.add(packageField);
 
         // 消息提示
         msgLabel = new JLabel();
-        msgLabel.setBounds(getRight(chooseButton), getBottom(targetField) + _V_GAP, _FIELD_WIDTH, 30);
+        msgLabel.setBounds(getRight(chooseButton), getBottom(packageField) + _V_GAP, _FIELD_WIDTH, 30);
         panel.add(msgLabel);
 
 
         JButton executeButton = new JButton("Execute");
-        executeButton.setBounds(getRight(targetField) - 100, getBottom(targetField) + _V_GAP, 100, 30);
+        executeButton.setBounds(getRight(targetField) - 100, getBottom(packageField) + _V_GAP, 100, 30);
         executeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                msgLabel.setText("hello");
-                if (null == targetField.getText()) {
-                    System.out.println("");
-                }
+                // host
+                String host = hostField.getText();
+
+                // username
+                String username = usernameField.getText();
+
+                // password
+                String password = passwordField.getText();
+
+                // database
+                String database = databaseField.getText();
+
+                // port
+                String port = portField.getText();
+
+                String packageName = packageField.getText();
+
+                String targetDir = targetField.getText();
+
+                Generate.start(host, username, password, database, port, packageName, targetDir);
+
+                msgLabel.setText("Done!!");
+
+                // 保存配置
+                ConfigUtils.setValue("host",host);
+                ConfigUtils.setValue("username",username);
+                ConfigUtils.setValue("password",password);
+
+                ConfigUtils.setValue("database",database);
+                ConfigUtils.setValue("port",port);
+                ConfigUtils.setValue("packageName",packageName);
+                ConfigUtils.setValue("targetDir",targetDir);
             }
         });
         panel.add(executeButton);
 
 
         this.add(panel, BorderLayout.CENTER);
+
+        // 初始化数据
+        hostField.setText(ConfigUtils.getValue("host"));
+        usernameField.setText(ConfigUtils.getValue("username"));
+        passwordField.setText(ConfigUtils.getValue("password"));
+
+        databaseField.setText(ConfigUtils.getValue("database"));
+        portField.setText(ConfigUtils.getValue("port"));
+        packageField.setText(ConfigUtils.getValue("packageName"));
+        targetField.setText(ConfigUtils.getValue("targetDir"));
 
     }
 
@@ -159,7 +209,6 @@ public class DbHelperClient extends JFrame {
         });
 
     }
-
 
     /**
      * 获取控件最右端
