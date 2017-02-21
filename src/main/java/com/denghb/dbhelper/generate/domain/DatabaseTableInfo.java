@@ -1,4 +1,4 @@
-package com.denghb.dbhepler.generate.domain;
+package com.denghb.dbhelper.generate.domain;
 
 /**
  * Created by ppd on 2017/2/20.

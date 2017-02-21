@@ -1,8 +1,8 @@
-package com.denghb.dbhepler.client;
+package com.denghb.dbhelper.client;
 
-import com.denghb.dbhepler.generate.Generate;
-import com.denghb.dbhepler.generate.GenerateException;
-import com.denghb.dbhepler.utils.ConfigUtils;
+import com.denghb.dbhelper.generate.Generate;
+import com.denghb.dbhelper.generate.GenerateException;
+import com.denghb.dbhelper.utils.ConfigUtils;
 
 import javax.swing.*;
 import java.awt.*;

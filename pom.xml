@@ -52,7 +52,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.denghb.dbhepler.client.DbHelperClient</mainClass>
+                            <mainClass>com.denghb.dbhelper.client.DbHelperClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

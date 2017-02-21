@@ -1,8 +1,8 @@
-package com.denghb.dbhepler.generate.domain;
+package com.denghb.dbhelper.generate.domain;
 
 import java.io.Serializable;
 
-import com.denghb.dbhepler.generate.utils.ColumnUtils;
+import com.denghb.dbhelper.generate.utils.ColumnUtils;
 
 public class TableInfo implements Serializable {
 

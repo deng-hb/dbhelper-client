@@ -1,6 +1,6 @@
-package com.denghb.dbhepler.generate.utils;
+package com.denghb.dbhelper.generate.utils;
 
-import com.denghb.dbhepler.generate.domain.DatabaseTableInfo;
+import com.denghb.dbhelper.generate.domain.DatabaseTableInfo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

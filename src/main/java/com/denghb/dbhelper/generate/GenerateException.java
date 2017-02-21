@@ -1,4 +1,4 @@
-package com.denghb.dbhepler.generate;
+package com.denghb.dbhelper.generate;
 
 /**
  * Created by ppd on 2017/2/20.

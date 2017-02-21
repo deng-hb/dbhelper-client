@@ -1,4 +1,4 @@
-package com.denghb.dbhepler.generate.utils;
+package com.denghb.dbhelper.generate.utils;
 
 /**
  *

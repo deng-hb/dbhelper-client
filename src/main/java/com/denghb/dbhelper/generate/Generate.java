@@ -1,13 +1,12 @@
-package com.denghb.dbhepler.generate;
+package com.denghb.dbhelper.generate;
 
-import com.denghb.dbhepler.generate.domain.DatabaseTableInfo;
-import com.denghb.dbhepler.generate.domain.TableInfo;
-import com.denghb.dbhepler.generate.utils.ColumnUtils;
-import com.denghb.dbhepler.generate.utils.DatabaseTableInfoUtils;
-import com.denghb.dbhepler.generate.utils.TableInfoUtils;
+import com.denghb.dbhelper.generate.domain.DatabaseTableInfo;
+import com.denghb.dbhelper.generate.domain.TableInfo;
+import com.denghb.dbhelper.generate.utils.ColumnUtils;
+import com.denghb.dbhelper.generate.utils.DatabaseTableInfoUtils;
+import com.denghb.dbhelper.generate.utils.TableInfoUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 import java.io.*;
 import java.sql.*;
