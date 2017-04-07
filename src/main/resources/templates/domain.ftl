@@ -40,8 +40,10 @@ public class ${domainName} implements java.io.Serializable {
 	public String toString(){
 		StringBuffer str = new StringBuffer("${domainName} [");
 		<#list list as table>
-		str.append(",${table.objectName}=");
+		str.append("${table.objectName}=\"");
 		str.append(${table.objectName});
+		str.append("\"");
+		<#if (list?size - 1 > table_index) >str.append(",");</#if>
 		</#list>
 		str.append("]");
 	
