@@ -51,7 +51,7 @@ public class ColumnUtils {
         }
 
         dataType = dataType.toLowerCase().trim();
-        if ("varchar".equals(dataType) || "text".equals(dataType) || "string".equals(dataType) || "char".equals(dataType) || "longtext".equals(dataType)) {
+        if ("varchar".equals(dataType) || "text".equals(dataType) || "string".equals(dataType) || "char".equals(dataType) || "longtext".equals(dataType) || "mediumtext".equals(dataType)) {
             dataType = "String";
         } else if ("int".equals(dataType) || "integer".equals(dataType) || "smallint".equals(dataType)) {
             dataType = "Integer";
@@ -61,7 +61,7 @@ public class ColumnUtils {
             dataType = "java.util.Date";
         } else if ("tinyint".equals(dataType) || "boolean".equals(dataType)) {
             dataType = "Boolean";
-        } else if ("decimal".equals(dataType)) {
+        } else if ("decimal".equals(dataType) || "double".equals(dataType)) {
             dataType = "java.math.BigDecimal";
         } else {
             throw new RuntimeException("dataType not find :" + dataType);
