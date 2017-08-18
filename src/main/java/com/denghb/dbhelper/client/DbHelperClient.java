@@ -1,7 +1,12 @@
 package com.denghb.dbhelper.client;
 
+import com.denghb.dbhelper.client.table.DatabaseTableModel;
+import com.denghb.dbhelper.client.table.TableView;
 import com.denghb.dbhelper.generate.Generate;
 import com.denghb.dbhelper.generate.GenerateException;
+import com.denghb.dbhelper.generate.domain.DatabaseInfo;
+import com.denghb.dbhelper.generate.utils.DatabaseTableInfoUtils;
+import com.denghb.dbhelper.generate.utils.DbUtils;
 import com.denghb.dbhelper.utils.ConfigUtils;
 
 import javax.swing.*;
@@ -9,6 +14,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by denghb on 2017/2/19.
@@ -22,24 +29,60 @@ public class DbHelperClient extends JFrame {
     private static final int _LABEL_WIDTH = 100;
     private static final int _LABEL_HEIGHT = 20;
 
-    private static final int _FIELD_WIDTH = 250;
+    private static final int _FIELD_WIDTH = 200;
     private static final int _V_GAP = 10;
+    JPanel panel = new JPanel();
+    String database = "";
+
+    Vector<DatabaseInfo> data = new Vector<DatabaseInfo>();
+    DatabaseTableModel model = new DatabaseTableModel(data);
+    TableView table = new TableView(model);
 
     public DbHelperClient() {
         this.setTitle("Generate Entity from MySQL!!!");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 关闭按钮的动作为退出窗口
-        this.setSize(400, 320);// 大小
+        this.setSize(600, 320);// 大小
         this.setResizable(false);// 禁止缩放
         this.setLocationRelativeTo(null);// 屏幕居中显示，需要先设置frame大小
 
+        panel.setLayout(null);
+
         initView();
+
+        final JTextField searchField = new JTextField();
+        searchField.setBounds(320, 10, 230, _LABEL_HEIGHT);
+        panel.add(searchField);
+
+        JButton searchButton = new JButton("S");
+        searchButton.setBounds(getRight(searchField), 10, 30, 20);
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // host
+                String search = searchField.getText();
+
+                // 获取对应数据库表信息
+                List<DatabaseInfo> list = DatabaseTableInfoUtils.load(DbUtils.getConnection(), database, search);
+
+                data.removeAllElements();
+
+                for (DatabaseInfo info : list) {
+                    data.add(info);
+                }
+
+                table.reloadData();
+
+            }
+        });
+        panel.add(searchButton);
+
+        table.setBounds(320, 30, 260, 250);
+        panel.add(table);
 
         this.setVisible(true);// 显示
     }
 
     private void initView() {
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
 
 
         JLabel label = new JLabel("MySQL Config:");
@@ -74,7 +117,7 @@ public class DbHelperClient extends JFrame {
         passwordLabel.setBounds(_X, getBottom(usernameLabel) + _V_GAP, _LABEL_WIDTH, _LABEL_HEIGHT);
         panel.add(passwordLabel);
 
-        final JTextField passwordField = new JTextField();
+        final JPasswordField passwordField = new JPasswordField();
         passwordField.setBounds(getRight(passwordLabel), getBottom(usernameField) + _V_GAP, _FIELD_WIDTH, _LABEL_HEIGHT);
         panel.add(passwordField);
 
@@ -146,14 +189,14 @@ public class DbHelperClient extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // host
                 String host = hostField.getText();
-                if(isEmpty(host)){
+                if (isEmpty(host)) {
                     showError("Host is empty");
                     return;
                 }
 
                 // username
                 String username = usernameField.getText();
-                if(isEmpty(username)){
+                if (isEmpty(username)) {
                     showError("Username is empty");
                     return;
                 }
@@ -162,32 +205,34 @@ public class DbHelperClient extends JFrame {
                 String password = passwordField.getText();
 
                 // database
-                String database = databaseField.getText();
-                if(isEmpty(database)){
+                database = databaseField.getText();
+                if (isEmpty(database)) {
                     showError("Database is empty");
                     return;
                 }
 
                 // port
                 String port = portField.getText();
-                if(isEmpty(port)){
+                if (isEmpty(port)) {
                     port = "3306";
                 }
 
+
                 String targetDir = targetField.getText();
-                if(isEmpty(targetDir)){
+                if (isEmpty(targetDir)) {
                     showError("Please Choose Directory");
                     return;
                 }
                 String packageName = packageField.getText();
-                if(isEmpty(packageName)){
+                if (isEmpty(packageName)) {
                     showError("Package is empty");
                     return;
                 }
 
 
                 try {
-                    Generate.start(host, username, password, database, port, packageName, targetDir);
+                    DbUtils.init(host, username, password, database, port);
+//                    Generate.start(database, packageName, targetDir);
                     showSuccess("Done!!");
                 } catch (GenerateException e1) {
                     showError(e1.getMessage());
@@ -195,14 +240,14 @@ public class DbHelperClient extends JFrame {
 
 
                 // 保存配置
-                ConfigUtils.setValue("host",host);
-                ConfigUtils.setValue("username",username);
-                ConfigUtils.setValue("password",password);
+                ConfigUtils.setValue("host", host);
+                ConfigUtils.setValue("username", username);
+                ConfigUtils.setValue("password", password);
 
-                ConfigUtils.setValue("database",database);
-                ConfigUtils.setValue("port",port);
-                ConfigUtils.setValue("packageName",packageName);
-                ConfigUtils.setValue("targetDir",targetDir);
+                ConfigUtils.setValue("database", database);
+                ConfigUtils.setValue("port", port);
+                ConfigUtils.setValue("packageName", packageName);
+                ConfigUtils.setValue("targetDir", targetDir);
             }
         });
         panel.add(executeButton);
@@ -238,17 +283,17 @@ public class DbHelperClient extends JFrame {
 
     }
 
-    private void showSuccess(String msg){
+    private void showSuccess(String msg) {
         msgLabel.setText(msg);
         msgLabel.setForeground(Color.GREEN);
     }
 
-    private void showError(String msg){
+    private void showError(String msg) {
         msgLabel.setText(msg);
         msgLabel.setForeground(Color.RED);
     }
 
-    private boolean isEmpty(String text){
+    private boolean isEmpty(String text) {
         return null == text || 0 == text.trim().length();
     }
 

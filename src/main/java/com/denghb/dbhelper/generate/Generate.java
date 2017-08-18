@@ -1,9 +1,10 @@
 package com.denghb.dbhelper.generate;
 
-import com.denghb.dbhelper.generate.domain.DatabaseTableInfo;
+import com.denghb.dbhelper.generate.domain.DatabaseInfo;
 import com.denghb.dbhelper.generate.domain.TableInfo;
 import com.denghb.dbhelper.generate.utils.ColumnUtils;
 import com.denghb.dbhelper.generate.utils.DatabaseTableInfoUtils;
+import com.denghb.dbhelper.generate.utils.DbUtils;
 import com.denghb.dbhelper.generate.utils.TableInfoUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -20,44 +21,18 @@ import java.util.Map;
  */
 public class Generate {
 
+    private Generate(Connection conn, String database, String packageName, String targetDir) throws GenerateException {
 
-    private static final String DB_URL = "jdbc:mysql://%s:%s/%s?useUnicode=true&amp;characterEncoding=utf-8";
-
-    private Generate(String host, String username, String password, String database, String port, String packageName, String targetDir) throws GenerateException {
-
-        String url = String.format(DB_URL, host, port, database);
-
-        Connection conn = null;
-        try {
-            // 注册 JDBC 驱动
-            Class.forName("com.mysql.jdbc.Driver");
-
-            // 打开链接
-            System.out.println("Connection ...");
-            conn = DriverManager.getConnection(url, username, password);
-
-            // 获取对应数据库表信息
-            List<DatabaseTableInfo> list = DatabaseTableInfoUtils.load(conn, database);
-            for (DatabaseTableInfo info : list) {
-                create(conn, database, packageName, info, targetDir);
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new GenerateException("JDBC Error");
-        } finally {
-            // 关闭资源
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
+        // 获取对应数据库表信息
+        List<DatabaseInfo> list = DatabaseTableInfoUtils.load(conn, database, null);
+        for (DatabaseInfo info : list) {
+            create(conn, database, packageName, info, targetDir);
         }
-        System.out.println("Goodbye!");
+
+
     }
 
-    private void create(Connection conn, String database, String packageName, DatabaseTableInfo info, String targetDir) throws SQLException, GenerateException {
+    private void create(Connection conn, String database, String packageName, DatabaseInfo info, String targetDir) throws GenerateException {
         // 类名
         String domainName = ColumnUtils.removeAll_AndNextCharToUpperCase(info.getTableName());
         domainName = ColumnUtils.firstCharToUpperCase(domainName);
@@ -66,22 +41,18 @@ public class Generate {
 
         List<TableInfo> list = TableInfoUtils.load(conn, database, info.getTableName());
 
-        // 查询DDL 只能拼接
-        String ddlSql = "show create table `" + database + "`.`" + info.getTableName() + "`";
-        PreparedStatement preStatement = conn.prepareStatement(ddlSql);
-        ResultSet result = preStatement.executeQuery();
-        String ddl = null;
-        while (result.next()) {
-            ddl = result.getString(2);
-            break;
-        }
         try {
+            // 查询DDL 只能拼接
+            String ddlSql = "show create table `" + database + "`.`" + info.getTableName() + "`";
+            PreparedStatement preStatement = conn.prepareStatement(ddlSql);
+            ResultSet result = preStatement.executeQuery();
+            String ddl = null;
+            while (result.next()) {
+                ddl = result.getString(2);
+                break;
+            }
             preStatement.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        try {
             Configuration config = new Configuration(Configuration.VERSION_2_3_0);
             config.setClassForTemplateLoading(ClassLoader.class, "/templates/");
             Template template = config.getTemplate("domain.ftl", "UTF-8");
@@ -115,7 +86,7 @@ public class Generate {
         }
     }
 
-    public static void start(String host, String username, String password, String database, String port, String packageName, String targetDir) throws GenerateException {
-        new Generate(host, username, password, database, port, packageName, targetDir);
+    public static void start(String database, String packageName, String targetDir) throws GenerateException {
+        new Generate(DbUtils.getConnection(), database, packageName, targetDir);
     }
 }

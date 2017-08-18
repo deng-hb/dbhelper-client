@@ -3,7 +3,7 @@ package com.denghb.dbhelper.generate.domain;
 /**
  * Created by ppd on 2017/2/20.
  */
-public class DatabaseTableInfo {
+public class DatabaseInfo {
 
     /**
      * 表名
@@ -14,6 +14,8 @@ public class DatabaseTableInfo {
      * 表备注
      */
     private String tableComment;
+
+    private boolean checked = true;
 
     public String getTableName() {
 
@@ -39,4 +41,11 @@ public class DatabaseTableInfo {
         this.tableComment = tableComment;
     }
 
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }
