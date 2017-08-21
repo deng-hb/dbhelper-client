@@ -48,4 +48,13 @@ public class DatabaseInfo {
     public void setChecked(boolean checked) {
         this.checked = checked;
     }
+
+    @Override
+    public String toString() {
+        return "DatabaseInfo{" +
+                "tableName='" + tableName + '\'' +
+                ", tableComment='" + tableComment + '\'' +
+                ", checked=" + checked +
+                '}';
+    }
 }

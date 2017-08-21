@@ -3,8 +3,6 @@ package com.denghb.dbhelper.generate;
 import com.denghb.dbhelper.generate.domain.DatabaseInfo;
 import com.denghb.dbhelper.generate.domain.TableInfo;
 import com.denghb.dbhelper.generate.utils.ColumnUtils;
-import com.denghb.dbhelper.generate.utils.DatabaseTableInfoUtils;
-import com.denghb.dbhelper.generate.utils.DbUtils;
 import com.denghb.dbhelper.generate.utils.TableInfoUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -21,23 +19,16 @@ import java.util.Map;
  */
 public class Generate {
 
-    private Generate(Connection conn, String database, String packageName, String targetDir) throws GenerateException {
-
-        // 获取对应数据库表信息
-        List<DatabaseInfo> list = DatabaseTableInfoUtils.load(conn, database, null);
-        for (DatabaseInfo info : list) {
-            create(conn, database, packageName, info, targetDir);
+    public static void create(Connection conn, String database, String packageName, DatabaseInfo info, String targetDir) throws GenerateException {
+        if (null == conn) {
+            throw  new GenerateException("Connection is null");
         }
 
-
-    }
-
-    private void create(Connection conn, String database, String packageName, DatabaseInfo info, String targetDir) throws GenerateException {
         // 类名
         String domainName = ColumnUtils.removeAll_AndNextCharToUpperCase(info.getTableName());
         domainName = ColumnUtils.firstCharToUpperCase(domainName);
         // 查询对应数据库对应表的字段信息
-        String sql = "SELECT * FROM information_schema.COLUMNS WHERE table_name = ? AND table_schema = ? ";
+//        String sql = "SELECT * FROM information_schema.COLUMNS WHERE table_name = ? AND table_schema = ? ";
 
         List<TableInfo> list = TableInfoUtils.load(conn, database, info.getTableName());
 
@@ -86,7 +77,4 @@ public class Generate {
         }
     }
 
-    public static void start(String database, String packageName, String targetDir) throws GenerateException {
-        new Generate(DbUtils.getConnection(), database, packageName, targetDir);
-    }
 }

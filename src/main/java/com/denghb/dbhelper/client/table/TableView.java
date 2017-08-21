@@ -13,25 +13,24 @@ public class TableView extends JScrollPane {
 
     JTable table = null;
 
-    public TableView(TableModel tableModel) {
+    public TableView(final TableModel tableModel) {
         table = new JTable(tableModel);
         //设置表头行高
         table.getTableHeader().setPreferredSize(new Dimension(0, 20));
         //设置表内容行高
         table.setRowHeight(25);
         //设置单选模式
-        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //设置单元格不可拖动
         table.getTableHeader().setReorderingAllowed(false);
         //设置不可改变列宽
 //        table.getTableHeader().setResizingAllowed(false);
 
         //设置列宽
-        table.getColumnModel().getColumn(0).setPreferredWidth(100);
-        table.getColumnModel().getColumn(1).setPreferredWidth(80);
-        int rowIndex = table.getSelectedRow();
-        //监听事件
+        table.getColumnModel().getColumn(0).setPreferredWidth(120);
+        table.getColumnModel().getColumn(2).setPreferredWidth(50);
 
+        //监听事件
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
             public void valueChanged(ListSelectionEvent e) {
@@ -40,6 +39,8 @@ public class TableView extends JScrollPane {
                     int rowIndex = table.getSelectedRow();
                     if (rowIndex != -1) {
                         System.out.println("表格行被选中" + rowIndex);
+                        Boolean object = (Boolean) tableModel.getValueAt(rowIndex, 2);
+                        System.out.println(object);
                     }
                 }
 

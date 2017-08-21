@@ -15,16 +15,12 @@ import java.util.List;
  */
 public class DatabaseTableInfoUtils {
 
-    public static List<DatabaseInfo> load(Connection conn, String database, String search) {
+    public static List<DatabaseInfo> load(Connection conn, String database) {
         List<DatabaseInfo> list = new ArrayList<DatabaseInfo>();
 
         try {
 
             String sql = "select table_name,table_comment from information_schema.tables where table_schema=? ";
-
-            if (null != search && 0 < search.trim().length()) {
-                sql += " and table_name like '%" + search + "%'";
-            }
 
             PreparedStatement preStatement = conn.prepareStatement(sql);
             preStatement.setString(1, database);
