@@ -251,7 +251,7 @@ public class ControlPanel extends Panel {
         executeField.setBounds(connField.getX(), searchField.getY(), _WIDTH, _HEIGHT);
         this.add(executeField);
 
-        JButton executeButton = new JButton("2. Execute");
+        final JButton executeButton = new JButton("2. Execute");
         executeButton.setBorderPainted(false);
         executeButton.setBounds(0, 0, _WIDTH, _HEIGHT);
         executeButton.setBackground(Color.lightGray);

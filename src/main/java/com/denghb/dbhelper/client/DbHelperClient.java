@@ -29,6 +29,7 @@ public class DbHelperClient extends JFrame {
     TableView table = new TableView(model);
 
     ConnectionInfo connInfo;
+    JPanel loadPanel;
 
     public DbHelperClient() {
         this.setTitle("Generate Entity from MySQL!!!");
@@ -38,7 +39,27 @@ public class DbHelperClient extends JFrame {
         this.setLocationRelativeTo(null);// 屏幕居中显示，需要先设置frame大小
 
         panel.setLayout(null);
-        this.add(panel, BorderLayout.CENTER);
+        panel.setBounds(0, 0, 800, 600);
+        this.add(panel);
+
+
+        loadPanel = new JPanel();
+        loadPanel.setLayout(null);
+        loadPanel.setEnabled(false);
+//        loadPanel.setBackground(Color.lightGray);
+//        loadPanel.setOpaque(true);
+        loadPanel.setBounds(0, 0, this.getWidth(), this.getHeight());
+
+        ClassLoader cldr = this.getClass().getClassLoader();
+        java.net.URL imageURL = cldr.getResource("images/loading.gif");
+        ImageIcon imageIcon = new ImageIcon(imageURL);
+        JLabel iconLabel = new JLabel();
+        iconLabel.setIcon(imageIcon);
+        imageIcon.setImageObserver(iconLabel);
+        iconLabel.setBounds((loadPanel.getWidth() - imageIcon.getIconWidth()) / 2, (loadPanel.getHeight() - imageIcon.getIconHeight()) / 2, imageIcon.getIconWidth(), imageIcon.getIconHeight());
+        loadPanel.add(iconLabel);
+        loadPanel.setVisible(false);
+        panel.add(loadPanel);
 
         // 操作面板
         ControlPanel controlPanel = new ControlPanel();
@@ -80,30 +101,45 @@ public class DbHelperClient extends JFrame {
         });
         controlPanel.setExecuteHandler(new ControlPanel.ControlExecuteHandler() {
             @Override
-            public void execute(String packageName, String targetDir) {
+            public void execute(final String packageName, final String targetDir) {
+
                 if (data.isEmpty()) {
                     System.out.println("data is null");
                     return;
                 }
 
 
-                for (DatabaseInfo info : data) {
+                loadPanel.setVisible(true);
+                SwingWorker worker = new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
 
-                    try {
-                        if (info.isChecked()) {
-                            Generate.create(DbUtils.getConnection(), connInfo.getDatabase(), packageName, info, targetDir);
+                        for (DatabaseInfo info : data) {
+
+                            try {
+                                if (info.isChecked()) {
+                                    Generate.create(DbUtils.getConnection(), connInfo.getDatabase(), packageName, info, targetDir);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return null;
+                            }
+
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return;
+                        return null;
                     }
 
-                }
-                System.out.println("execute ok");
+                    protected void done() {
+                        System.out.println("execute ok");
+                        loadPanel.setVisible(false);
+                    }
+                };
+
+                worker.execute();
+
             }
         });
         panel.add(controlPanel);
-
         // 表格
         table.setBounds(30, 280, 740, 280);
         panel.add(table);
