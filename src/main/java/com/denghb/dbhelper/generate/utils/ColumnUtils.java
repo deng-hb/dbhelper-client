@@ -57,7 +57,7 @@ public class ColumnUtils {
             dataType = "Integer";
         } else if ("bigint".equals(dataType) || "long".equals(dataType)) {
             dataType = "Long";
-        } else if ("timestamp".equals(dataType) || "datetime".equals(dataType) || "date".equals(dataType)) {
+        } else if ("timestamp".equals(dataType) || "datetime".equals(dataType) || "date".equals(dataType) || "time".equals(dataType) || "year".equals(dataType)) {
             dataType = "java.util.Date";
         } else if ("tinyint".equals(dataType) || "boolean".equals(dataType)) {
             dataType = "Boolean";

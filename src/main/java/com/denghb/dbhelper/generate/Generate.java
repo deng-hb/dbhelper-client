@@ -64,11 +64,18 @@ public class Generate {
 
             // TODO 路径
             File file = new File(targetDir + "/" + domainName + ".java");
+
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
             if (!file.exists()) {
                 // System.out.println("file exist");
                 file.createNewFile();
             }
-            Writer out = new BufferedWriter(new FileWriter(file));
+//            Writer out = new BufferedWriter(new FileWriter(file));
+            // 使用这个方式创建就不会出现乱码了
+            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"));
+
             template.process(root, out);
             out.flush();
         } catch (Exception e) {
